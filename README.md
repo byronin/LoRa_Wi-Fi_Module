@@ -4,9 +4,9 @@
 
   There are many lora modules and many boards that contain lora module on the market. Its modules are difficult to use alone, and the boards never fully meet our needs. I designed a programmable lora module so that it would be easy to use with all kinds of boards. The mcu controlling the module is an esp8266 chip. In this way, our module gained Wi-Fi feature. In particular I did a few tests with the Raspberry Pi Pico, which gives the pico board the Wi-Fi feature. You can program the board as you wish with the ESP8266EX method. I just wrote a code that will enable two lora modules to communicate with each other. The rest of the development process is in your hands. Below are two different board designs and test results. I hope this module will help you improve your projects. [Click for pcb production file.](https://www.pcbway.com/project/member/?bmbno=1F77F424-45AC-4F "Click for pcb production file.") Feel free to contact me for any problem.
 ## Sponsor
-[![](https://github.com/byronin/MQTT-DMD/blob/main/Hardware/PCBWay_logo.png)](https://www.pcbway.com/project/shareproject/P10_Display_DMD_Text_Box_with_ESP8266_MQTT_P10_Display_Wi_Fi_Controller_4e9eb7f1.html)
+[![](https://github.com/byronin/MQTT-DMD/blob/main/Hardware/PCBWay_logo.png)](https://www.pcbway.com/project/shareproject/LoRa_Module_for_Raspberry_Pi_Arduino_ESP8266_Testing_LoRa_under_sea_83c3da00.html)
 #### Thanks to PCBWay for handling PCB production.
-<a href="https://www.pcbway.com/project/shareproject/P10_Display_DMD_Text_Box_with_ESP8266_MQTT_P10_Display_Wi_Fi_Controller_4e9eb7f1.html"><img src="https://www.pcbway.com/project/img/images/frompcbway-1220.png" alt="PCB from PCBWay" /></a>
+<a href="https://www.pcbway.com/project/shareproject/LoRa_Module_for_Raspberry_Pi_Arduino_ESP8266_Testing_LoRa_under_sea_83c3da00.html"><img src="https://www.pcbway.com/project/img/images/frompcbway-1220.png" alt="PCB from PCBWay" /></a>
 
   ## Schematic
 [![](https://github.com/byronin/LoRa_Wi-Fi_Module/blob/main/Hardware/Ra-01_Sch.png)](https://github.com/byronin/LoRa_Wi-Fi_Module/blob/main/Hardware/Ra-01_Sch.png)
