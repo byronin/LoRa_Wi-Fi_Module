@@ -27,7 +27,7 @@
 |7| 12K Resistor | 0402  | 2 pcs ||8| 22nf Cap  | 0402  | 1 pcs  |
 |9| 100uf Cap | 1210  | 2 pcs || 10  | 10K Resistor | 0402  | 4 pcs  |
 |11| 100nf Cap  | 0402  | 1 pcs ||  12 | 1uf Cap | 0603  | 1 pcs  |
-|13| 10uf Cap  | 3.5mm DIP  | 2 pcs  ||14| LED | 0603  | 1 pcs  |
+|13| 10uf Cap  | 0805  | 2 pcs  ||14| LED | 0603  | 1 pcs  |
 |15| Header 1x4 ML  | 2.54-90  | 1 pcs  ||16| LoRa Module  |   | 1 pcs  |
 |17| Button-SMD  | 3X4X2.5MM-4pin  | 2 pcs  | 
 
