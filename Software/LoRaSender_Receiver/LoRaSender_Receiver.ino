@@ -90,3 +90,18 @@ except KeyboardInterrupt:
 client.loop_stop()
 client.disconnect()
 ser.close()
+
+[Unit]
+Description=MQTT to Serial Python Script
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/ronin/robot/mqtt_serial.py
+WorkingDirectory=/home/ronin/robot
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=ronin
+
+[Install]
+WantedBy=multi-user.target
