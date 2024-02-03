@@ -45,6 +45,23 @@ void loop() {
 import paho.mqtt.client as mqtt
 import serial
 import time
+import socket  # Import socket for internet connection check
+
+# Function to check internet connection
+def check_internet_connection(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        print("Waiting for internet connection...")
+        return False
+
+# Wait for internet connection before proceeding
+while not check_internet_connection():
+    time.sleep(5)
+
+print("Internet connection established. Continuing with the program...")
 
 # MQTT Settings
 broker_address = "broker.hivemq.com"
@@ -90,6 +107,7 @@ except KeyboardInterrupt:
 client.loop_stop()
 client.disconnect()
 ser.close()
+
 
 [Unit]
 Description=MQTT to Serial Python Script
