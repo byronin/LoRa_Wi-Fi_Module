@@ -170,3 +170,80 @@ thread.start()
 
 # MQTT loop başlat
 mqtt_client.loop_forever()
+
+******************
+import paho.mqtt.client as mqtt
+import serial
+import threading
+import time
+import socket  # Import socket for internet connection check
+
+# Function to check internet connection
+def check_internet_connection(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        print("Waiting for internet connection...")
+        return False
+
+# Wait for internet connection before proceeding
+while not check_internet_connection():
+    time.sleep(5)
+
+print("Internet connection established. Continuing with the program...")
+
+# MQTT Broker settings
+mqtt_broker = "broker.hivemq.com"
+mqtt_port = 1883
+mqtt_topic_publish = "topic/serial1"
+mqtt_topic_subscribe = "topic/serial2"
+
+# Serial port settings
+seri_port = '/dev/serial0'  # Adjust this according to your system
+baud_rate = 115200
+
+# Open the serial port
+ser = serial.Serial(seri_port, baud_rate)
+
+# Function to be called when a message is received from MQTT
+def on_message(client, userdata, msg):
+    message = msg.payload
+    ser.write(message)  # Write to the serial port
+
+# Function to read data from serial and publish to MQTT
+def read_from_serial_and_publish(client):
+    while True:
+        if ser.in_waiting > 0:
+            incoming_data = ser.readline().decode('utf-8').rstrip()
+            print(f"Data received from serial: {incoming_data}")
+            client.publish(mqtt_topic_publish, incoming_data)
+            time.sleep(1)
+
+# Set up MQTT client
+mqtt_client = mqtt.Client()
+mqtt_client.on_connect = lambda client, userdata, flags, rc: client.subscribe(mqtt_topic_subscribe)
+mqtt_client.on_message = on_message
+mqtt_client.connect(mqtt_broker, mqtt_port, 60)
+
+# Start the MQTT loop in a separate thread
+mqtt_thread = threading.Thread(target=mqtt_client.loop_forever)
+mqtt_thread.daemon = True
+mqtt_thread.start()
+
+# Start the serial reading in a separate thread
+serial_thread = threading.Thread(target=read_from_serial_and_publish, args=(mqtt_client,))
+serial_thread.daemon = True
+serial_thread.start()
+
+try:
+    while True:
+        time.sleep(10)  # Main thread stays alive
+except KeyboardInterrupt:
+    print("Program terminated")
+
+# Cleanup
+mqtt_client.loop_stop()
+mqtt_client.disconnect()
+ser.close()
