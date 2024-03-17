@@ -123,3 +123,50 @@ User=ronin
 
 [Install]
 WantedBy=multi-user.target
+111111
+import paho.mqtt.client as mqtt
+import serial
+import threading
+
+# MQTT Broker ayarları
+mqtt_broker = "broker.hivemq.com"
+mqtt_port = 1883
+mqtt_topic_publish = "topic/serial1"
+mqtt_topic_subscribe = "topic/serial2"
+
+# Seri port ayarları
+seri_port = '/dev/serial0'  # Raspberry Pi'nin seri portu
+baud_rate = 115200
+
+# Seri portu aç
+ser = serial.Serial(seri_port, baud_rate)
+
+# MQTT mesajı geldiğinde çağrılacak fonksiyon
+def on_message(client, userdata, msg):
+    message = msg.payload
+    ser.write(message)  # Seri porta yaz
+
+# MQTT'ye bağlanma
+def on_connect(client, userdata, flags, rc):
+    client.subscribe(mqtt_topic_subscribe)
+
+# Seri porttan veri okuma
+def read_from_serial():
+    while True:
+        if ser.in_waiting > 0:
+            incoming_data = ser.readline()
+            mqtt_client.publish(mqtt_topic_publish, incoming_data)
+
+# MQTT Client'ı ayarla
+mqtt_client = mqtt.Client()
+mqtt_client.on_connect = on_connect
+mqtt_client.on_message = on_message
+mqtt_client.connect(mqtt_broker, mqtt_port, 60)
+
+# Seri porttan okuma için ayrı bir thread başlat
+thread = threading.Thread(target=read_from_serial)
+thread.daemon = True
+thread.start()
+
+# MQTT loop başlat
+mqtt_client.loop_forever()
