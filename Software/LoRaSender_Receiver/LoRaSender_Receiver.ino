@@ -247,3 +247,73 @@ except KeyboardInterrupt:
 mqtt_client.loop_stop()
 mqtt_client.disconnect()
 ser.close()
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+from paho.mqtt import client as mqtt_client
+import Jetson.GPIO as GPIO
+import serial
+import time
+import socket  # Import socket for internet connection check
+
+# Function to check internet connection
+def check_internet_connection(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        print("Waiting for internet connection...")
+        return False
+
+# Wait for internet connection before proceeding
+while not check_internet_connection():
+    time.sleep(5)
+
+#print("Internet connection established. Continuing with the program...")
+
+# MQTT Settings
+broker_address = "broker.emqx.io"
+port = 1883
+topic = "raspi/robot"
+topic2 = "raspi/robot2"
+
+# Serial port settings (Adjust these settings according to your system)
+ser = serial.Serial('/dev/ttyTHS1', 115200, timeout=1)
+#ser.flush()
+
+# Function to be called when a message is received from MQTT
+def on_message(client, userdata, message):
+    msg = str(message.payload.decode("utf-8"))
+    print(f"Message received from MQTT: {msg}")
+    ser.write(msg.encode('utf-8'))  # Write to serial port
+    ser.write(b'\n')
+# Read data from serial and publish to MQTT
+def read_from_serial_and_publish(client):
+    if ser.in_waiting > 0:
+        line = ser.readline().decode('utf-8').rstrip()
+        print(f"Data received from serial: {line}")
+        client.publish(topic2, line)
+
+# Set up MQTT client
+client = mqtt_client.Client('raspibot')
+client.on_message = on_message
+
+# Connect to the broker
+client.connect(broker_address, port=port)
+client.subscribe(topic)
+
+# Start listening for messages asynchronously
+client.loop_start()
+
+
+try:
+    while True:
+        read_from_serial_and_publish(client)
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Program sonlandırıldı.")
+    client.loop_stop()
+    client.disconnect()
+    ser.close()
+    # Burada programınızın düzgün bir şekilde kapanması için gerekli olan diğer temizlik işlemlerini yapabilirsiniz.
+
