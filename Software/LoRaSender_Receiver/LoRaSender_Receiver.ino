@@ -316,4 +316,33 @@ except KeyboardInterrupt:
     client.disconnect()
     ser.close()
     # Burada programınızın düzgün bir şekilde kapanması için gerekli olan diğer temizlik işlemlerini yapabilirsiniz.
+from flask import Flask, render_template, request
+import os
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/connect", methods=["POST"])
+def connect():
+    ssid = request.form["ssid"]
+    password = request.form["password"]
+    with open("/etc/wpa_supplicant/wpa_supplicant.conf", "a") as f:
+        f.write(f'\nnetwork={{\n ssid="{ssid}"\n psk="{password}"\n}}')
+    os.system("wpa_cli -i wlan0 reconfigure")
+    return "Wi-Fi'ye bağlanılıyor..."
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=80)
+
+
+<form method="POST" action="/connect">
+    <label for="ssid">SSID:</label>
+    <input type="text" id="ssid" name="ssid" required><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br>
+    <button type="submit">Bağlan</button>
+</form>
 
